@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import PriceBanner from './PriceBanner';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -132,6 +133,8 @@ const Header = () => {
   };
 
   return (
+    <>
+    <PriceBanner />
     <HeaderContainer>
       <LogoText onClick={handleLogoClick}>МХ ЗАКИ</LogoText>
       <BurgerButton onClick={toggleMenu} aria-label="Toggle menu">
@@ -144,6 +147,7 @@ const Header = () => {
         <NavAnchor href="#contacts" onClick={e => handleScroll(e, 'contacts')}>КОНТАКТИ</NavAnchor>
       </Nav>
     </HeaderContainer>
+    </>
   );
 };
 
