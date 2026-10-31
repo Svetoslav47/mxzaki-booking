@@ -328,7 +328,7 @@ export class TimeSlotService {
         const bookedSlots = appointments.map(app => {
             const populatedApp = app.toObject() as any;
             const start = new Date(`${populatedApp.dateTime.date}T${populatedApp.dateTime.time}`);
-            const end = addMinutes(start, populatedApp.service.duration * populatedApp.numberOfPeople);
+            const end = addMinutes(start, (populatedApp.service?.duration ?? 30) * (populatedApp.numberOfPeople || 1));
             return { start: start.toISOString(), end: end.toISOString() };
         });
 

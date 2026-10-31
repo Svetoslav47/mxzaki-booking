@@ -44,7 +44,7 @@ export const bookAppointment = async (req: Request<{}, {}, AppointmentRequest>, 
         const startTime = new Date(`${appointment.dateTime.date}T${appointment.dateTime.time}`);
         return {
             start: appointment.dateTime.time,
-            end: addMinutes(startTime, (appointment.service as any).duration * appointment.numberOfPeople).toISOString()
+            end: addMinutes(startTime, ((appointment.service as any)?.duration ?? 30) * (appointment.numberOfPeople || 1)).toISOString()
         };
     });
 
