@@ -10,51 +10,19 @@ const isActive = () => {
   return now >= SHOW_FROM && now < SHOW_UNTIL;
 };
 
-const Banner = styled.a`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.85rem 1.5rem;
-  background-color: #C19B76;
-  color: #000000;
-  text-decoration: none;
-  text-align: center;
-  font-family: 'Montserrat', 'Arial', sans-serif;
-  position: relative;
-  z-index: 1001;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #D4B08C;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
-  }
-`;
-
-const Title = styled.span`
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+const Notice = styled.p`
+  color: #E53935;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 1px;
   text-transform: uppercase;
+  margin: -0.5rem 0 1.5rem;
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 1.8rem;
+    margin: -0.5rem 0 1.25rem;
   }
-`;
-
-const Link = styled.span`
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  white-space: nowrap;
 `;
 
 const PriceBanner = () => {
@@ -68,17 +36,7 @@ const PriceBanner = () => {
 
   if (!visible) return null;
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <Banner href="#services" onClick={handleClick} role="status">
-      <Title>Нови цени от 1 ноември</Title>
-      <Link>Вижте услугите →</Link>
-    </Banner>
-  );
+  return <Notice>Нови цени от 1 ноември</Notice>;
 };
 
 export default PriceBanner;

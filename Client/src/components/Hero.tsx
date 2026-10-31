@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import PriceBanner from './PriceBanner';
 
 const HeroSection = styled.section`
   position: relative;
@@ -197,6 +198,7 @@ export default function Hero() {
             <PhoneLink href="tel:0890139334">0890139334</PhoneLink>
           </ContactInfo>
           <Title>ДОБРЕ ДОШЛИ</Title>
+          <PriceBanner />
           <Subtitle>
             Запазете час в бръснарница Мх Заки за перфектната прическа.
           </Subtitle>
