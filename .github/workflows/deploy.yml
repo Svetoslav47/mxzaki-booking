@@ -1,0 +1,68 @@
+name: Deploy API
+
+# Builds the API in GitHub and uploads it to the server when Server/ changes on main, or by hand.
+# carbnp-activate on the server restarts it, checks its health and goes back to the previous release on failure.
+on:
+  push:
+    branches: [main]
+    paths: ['Server/**', '.github/workflows/deploy.yml']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit, branch or tag to deploy (use an older commit to roll back)
+        required: false
+        default: main
+        type: string
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - name: Build
+        working-directory: Server
+        run: |
+          npm ci
+          npm run build
+          npm prune --omit=dev
+
+      - name: Set up SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload the release
+        working-directory: Server
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+        run: |
+          rsync -rlptR --delete --chmod=Du+rwx,Dgo+rx,Dgo-w,Fu+rw,Fgo+r,Fgo-w \
+            -e "ssh -i $HOME/.ssh/deploy_key" \
+            dist node_modules package.json package-lock.json \
+            "$TARGET:/srv/mxzaki/releases/$(git rev-parse HEAD)/"
+
+      - name: Make it live
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+        run: ssh -i ~/.ssh/deploy_key "$TARGET" carbnp-activate mxzaki "$(git rev-parse HEAD)"
